@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Healthcare Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .data-table {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-scheduled {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #e0e7ff;
+            color: #4c1d95;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .file-upload-label:hover {
+            background-color: #c7d2fe;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e8ed;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏥 Cloud Healthcare Management System</h1>
+    </header>
+
+    <div class="container">
+        <!-- Analytics Dashboard -->
+        <div class="dashboard" id="analytics">
+            <div class="card">
+                <h2>Total Patients</h2>
+                <div class="stat-value" id="totalPatients">0</div>
+                <div class="stat-label">Registered Patients</div>
+            </div>
+            <div class="card">
+                <h2>Appointments Today</h2>
+                <div class="stat-value" id="todayAppointments">0</div>
+                <div class="stat-label">Scheduled</div>
+            </div>
+            <div class="card">
+                <h2>Active Diagnoses</h2>
+                <div class="stat-value" id="activeDiagnoses">0</div>
+                <div class="stat-label">Ongoing Treatments</div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+
+        <!-- Main Interface Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('patients')">Patients</button>
+            <button class="tab" onclick="switchTab('appointments')">Appointments</button>
+            <button class="tab" onclick="switchTab('documents')">Documents</button>
+        </div>
+
+        <!-- Patients Tab -->
+        <div class="tab-content active" id="patients-tab">
+            <div class="form-section">
+                <h2>Add New Patient</h2>
+                <form id="patientForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" name="full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth *</label>
+                        <input type="date" id="dob" name="date_of_birth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="bloodType">Blood Type</label>
+                        <select id="bloodType" name="blood_type">
+                            <option value="">Select...</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="submitPatient">
+                        Add Patient
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="form-section">
+                <h2>Patient List</h2>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date of Birth</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Blood Type</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsList">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Loading patients...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Tab -->
+        <div class="tab-content" id="appointments-tab">
+            <div class="form-section">
+                <h2>Schedule Appointment</h2>
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label for="patientSelect">Patient *</label>
+                        <select id="patientSelect" name="patient_id" required>
+                            <option value="">Select patient...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentDate">Date & Time *</label>
+                        <input type="datetime-local" id="appointmentDate" name="appointment_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason">Reason for Visit *</label>
+                        <textarea id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                    <button type="submit">
+                        Schedule Appointment
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="form-section">
+                <h2>Upcoming Appointments</h2>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date & Time</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsList">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Loading appointments...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div class="tab-content" id="documents-tab">
+            <div class="form-section">
+                <h2>Upload Patient Document</h2>
+                <form id="documentForm">
+                    <div class="form-group">
+                        <label for="docPatientSelect">Patient *</label>
+                        <select id="docPatientSelect" name="patient_id" required>
+                            <option value="">Select patient...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Document *</label>
+                        <div class="file-upload">
+                            <input type="file" id="documentFile" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <label for="documentFile" class="file-upload-label">
+                                Choose file...
+                            </label>
+                        </div>
+                        <div id="fileName" style="margin-top: 10px; color: #666;"></div>
+                    </div>
+                    <button type="submit">
+                        Upload Document
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="form-section">
+                <h2>Document Storage</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    All patient documents are securely stored in Supabase Storage with encryption at rest and in transit.
+                </p>
+                <div id="documentsList">
+                    <p style="text-align: center; color: #999;">Upload documents to see them here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = '/.netlify/functions';
+        
+        // State
+        let patients = [];
+        let appointments = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnalytics();
+            loadPatients();
+            loadAppointments();
+            
+            // Set minimum date for appointment to now
+            document.getElementById('appointmentDate').min = new Date().toISOString().slice(0, 16);
+        });
+        
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        // Load analytics
+        async function loadAnalytics() {
+            try {
+                const response = await fetch(`${API_BASE}/analytics`);
+                const data = await response.json();
+                
+                document.getElementById('totalPatients').textContent = data.totalPatients || 0;
+                document.getElementById('todayAppointments').textContent = data.totalAppointments || 0;
+                document.getElementById('activeDiagnoses').textContent = data.totalDiagnoses || 0;
+            } catch (error) {
+                console.error('Failed to load analytics:', error);
+            }
+        }
+        
+        // Load patients
+        async function loadPatients() {
+            try {
+                const response = await fetch(`${API_BASE}/patients`);
+                const result = await response.json();
+                patients = result.data || [];
+                
+                // Update patient list table
+                const tbody = document.getElementById('patientsList');
+                if (patients.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No patients found</td></tr>';
+                } else {
+                    tbody.innerHTML = patients.map(patient => `
+                        <tr>
+                            <td>${patient.full_name}</td>
+                            <td>${new Date(patient.date_of_birth).toLocaleDateString()}</td>
+                            <td>${patient.email || '-'}</td>
+                            <td>${patient.phone || '-'}</td>
+                            <td>${patient.blood_type || '-'}</td>
+                            <td>${new Date(patient.created_at).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('');
+                }
+                
+                // Update patient selects
+                const patientOptions = '<option value="">Select patient...</option>' + 
+                    patients.map(p => `<option value="${p.id}">${p.full_name}</option>`).join('');
+                document.getElementById('patientSelect').innerHTML = patientOptions;
+                document.getElementById('docPatientSelect').innerHTML = patientOptions;
+                
+            } catch (error) {
+                console.error('Failed to load patients:', error);
+                showAlert('error', 'Failed to load patients');
+            }
+        }
+        
+        // Load appointments
+        async function loadAppointments() {
+            try {
+                const response = await fetch(`${API_BASE}/appointments`);
+                appointments = await response.json();
+                
+                const tbody = document.getElementById('appointmentsList');
+                if (appointments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No appointments found</td></tr>';
+                } else {
+                    tbody.innerHTML = appointments.map(apt => `
+                        <tr>
+                            <td>${apt.patient?.full_name || 'Unknown'}</td>
+                            <td>${new Date(apt.appointment_date).toLocaleString()}</td>
+                            <td>${apt.reason}</td>
+                            <td><span class="status-badge status-${apt.status}">${apt.status}</span></td>
+                            <td>
+                                <button onclick="updateAppointmentStatus('${apt.id}', 'completed')" 
+                                        style="padding: 5px 10px; font-size: 0.9rem;">
+                                    Complete
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load appointments:', error);
+                showAlert('error', 'Failed to load appointments');
+            }
+        }
+        
+        // Patient form submission
+        document.getElementById('patientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+            
+            submitBtn.disabled = true;
+            loading.style.display = 'inline-block';
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(`${API_BASE}/patients`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) throw new Error('Failed to add patient');
+                
+                showAlert('success', 'Patient added successfully!');
+                form.reset();
+                loadPatients();
+                loadAnalytics();
+            } catch (error) {
+                showAlert('error', 'Failed to add patient: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Appointment form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+            
+            submitBtn.disabled = true;
+            loading.style.display = 'inline-block';
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            data.doctor_id = '00000000-0000-0000-0000-000000000002'; // Demo doctor ID
+            
+            try {
+                const response = await fetch(`${API_BASE}/appointments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to schedule appointment');
+                }
+                
+                showAlert('success', 'Appointment scheduled successfully!');
+                form.reset();
+                loadAppointments();
+                loadAnalytics();
+            } catch (error) {
+                showAlert('error', error.message);
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Document upload
+        document.getElementById('documentFile').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+        });
+        
+        document.getElementById('documentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+            
+            submitBtn.disabled = true;
+            loading.style.display = 'inline-block';
+            
+            const file = document.getElementById('documentFile').files[0];
+            const patientId = document.getElementById('docPatientSelect').value;
+            
+            if (!file || !patientId) {
+                showAlert('error', 'Please select a patient and file');
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+                return;
+            }
+            
+            try {
+                // Convert file to base64
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64 = e.target.result.split(',')[1];
+                    
+                    const response = await fetch(`${API_BASE}/upload-document`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fileName: file.name,
+                            fileData: base64,
+                            fileType: file.type,
+                            patientId: patientId
+                        })
+                    });
+                    
+                    if (!response.ok) throw new Error('Upload failed');
+                    
+                    const result = await response.json();
+                    showAlert('success', 'Document uploaded successfully!');
+                    form.reset();
+                    document.getElementById('fileName').textContent = '';
+                    
+                    // Update documents list
+                    document.getElementById('documentsList').innerHTML = `
+                        <div class="card" style="margin-top: 10px;">
+                            <p><strong>Latest Upload:</strong> ${file.name}</p>
+                            <p style="color: #666; font-size: 0.9rem;">Path: ${result.path}</p>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } catch (error) {
+                showAlert('error', 'Failed to upload document: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Update appointment status
+        async function updateAppointmentStatus(id, status) {
+            try {
+                const response = await fetch(`${API_BASE}/appointments`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update appointment');
+                
+                showAlert('success', 'Appointment updated!');
+                loadAppointments();
+            } catch (error) {
+                showAlert('error', 'Failed to update appointment');
+            }
+        }
+        
+        // Alert helper
+        function showAlert(type, message) {
+            const alertEl = document.getElementById(`${type}Alert`);
+            alertEl.textContent = message;
+            alertEl.style.display = 'block';
+            
+            setTimeout(() => {
+                alertEl.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

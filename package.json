@@ -1,0 +1,18 @@
+
+{
+  "name": "cloud-healthcare-system",
+  "version": "1.0.0",
+  "description": "Cloud-based healthcare management system",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build needed for static site'",
+    "test": "npx autocannon http://localhost:8888/.netlify/functions/patients -c 10 -d 10"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0",
+    "autocannon": "^7.14.0"
+  }
+}
